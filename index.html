@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מחשבון סינקלייר</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            direction: rtl;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+            transition: transform 0.3s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+            font-weight: 600;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e1e1;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+            text-align: right;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .gender-group {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .gender-option {
+            flex: 1;
+            position: relative;
+        }
+
+        .gender-option input[type="radio"] {
+            display: none;
+        }
+
+        .gender-option label {
+            display: block;
+            padding: 15px;
+            border: 2px solid #e1e1e1;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+            margin: 0;
+        }
+
+        .gender-option input[type="radio"]:checked + label {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .toggle-group {
+            margin-bottom: 25px;
+        }
+
+        .toggle-container {
+            display: flex;
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid #e1e1e1;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .toggle-option {
+            flex: 1;
+            position: relative;
+        }
+
+        .toggle-option input[type="radio"] {
+            display: none;
+        }
+
+        .toggle-option label {
+            display: block;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0;
+            border-left: 1px solid #e1e1e1;
+        }
+
+        .toggle-option:last-child label {
+            border-left: none;
+        }
+
+        .toggle-option input[type="radio"]:checked + label {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            transform: scale(1.05);
+            z-index: 1;
+            position: relative;
+        }
+
+        .lifts-container {
+            transition: all 0.3s ease;
+        }
+
+        .two-lifts {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .result {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 30px;
+            transform: scale(0.95);
+            transition: all 0.3s ease;
+        }
+
+        .result.show {
+            transform: scale(1);
+        }
+
+        .result h3 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .result .score {
+            font-size: 2.5em;
+            font-weight: bold;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+                margin: 10px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .gender-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .two-lifts {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>מחשבון סינקלייר</h1>
+        
+        <form id="sinclairForm">
+            <div class="form-group">
+                <label for="bodyweight">משקל גוף (ק"ג)</label>
+                <input type="number" id="bodyweight" step="0.01" min="0" required>
+            </div>
+
+            <div class="form-group">
+                <label>מגדר</label>
+                <div class="gender-group">
+                    <div class="gender-option">
+                        <input type="radio" id="male" name="gender" value="male" required>
+                        <label for="male">זכר</label>
+                    </div>
+                    <div class="gender-option">
+                        <input type="radio" id="female" name="gender" value="female" required>
+                        <label for="female">נקבה</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="toggle-group">
+                <label>בחרו תוצאה</label>
+                <div class="toggle-container">
+                    <div class="toggle-option">
+                        <input type="radio" id="total" name="inputMethod" value="total" checked>
+                        <label for="total">קרב שניים</label>
+                    </div>
+                    <div class="toggle-option">
+                        <input type="radio" id="separate" name="inputMethod" value="separate">
+                        <label for="separate">הנפה + דחיקה</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lifts-container" id="liftsContainer">
+                <div class="form-group" id="totalInput">
+                    <label for="totalWeight">קרב שניים (ק"ג)</label>
+                    <input type="number" id="totalWeight" step="1" min="0">
+                </div>
+
+                <div class="two-lifts hidden" id="separateInputs">
+                    <div class="form-group">
+                        <label for="snatch">הנפה (ק"ג)</label>
+                        <input type="number" id="snatch" step="1" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="cleanJerk">דחיקה (ק"ג)</label>
+                        <input type="number" id="cleanJerk" step="1" min="0">
+                    </div>
+                </div>
+            </div>
+
+            <div class="result hidden" id="result">
+                <h3>הסינקלייר שלך הוא:</h3>
+                <div class="score" id="sinclairScore">0.00</div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const form = document.getElementById('sinclairForm');
+        const totalInput = document.getElementById('totalInput');
+        const separateInputs = document.getElementById('separateInputs');
+        const result = document.getElementById('result');
+        const sinclairScore = document.getElementById('sinclairScore');
+
+        // Constants for Sinclair formula
+        const CONSTANTS = {
+            male: { A: 0.700767819, b: 201.159 },
+            female: { A: 0.674107991, b: 163.918 }
+        };
+
+        // Toggle between total and separate inputs
+        document.querySelectorAll('input[name="inputMethod"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === 'total') {
+                    totalInput.classList.remove('hidden');
+                    separateInputs.classList.add('hidden');
+                } else {
+                    totalInput.classList.add('hidden');
+                    separateInputs.classList.remove('hidden');
+                }
+                calculateSinclair();
+            });
+        });
+
+        // Calculate Sinclair coefficient
+        function calculateSinclair() {
+            const bodyweight = parseFloat(document.getElementById('bodyweight').value);
+            const gender = document.querySelector('input[name="gender"]:checked')?.value;
+            const inputMethod = document.querySelector('input[name="inputMethod"]:checked')?.value;
+
+            if (!bodyweight || !gender) {
+                result.classList.add('hidden');
+                result.classList.remove('show');
+                return;
+            }
+
+            let total = 0;
+            if (inputMethod === 'total') {
+                total = parseFloat(document.getElementById('totalWeight').value) || 0;
+            } else {
+                const snatch = parseFloat(document.getElementById('snatch').value) || 0;
+                const cleanJerk = parseFloat(document.getElementById('cleanJerk').value) || 0;
+                total = snatch + cleanJerk;
+            }
+
+            if (total <= 0) {
+                result.classList.add('hidden');
+                result.classList.remove('show');
+                return;
+            }
+
+            // Calculate Sinclair coefficient
+            const constants = CONSTANTS[gender];
+            const X = Math.log10(bodyweight / constants.b);
+            const C = Math.pow(10, constants.A * X * X);
+            const sinclairResult = C * total;
+
+            // Display result with animation
+            sinclairScore.textContent = sinclairResult.toFixed(2);
+            result.classList.remove('hidden');
+            setTimeout(() => {
+                result.classList.add('show');
+            }, 50);
+        }
+
+        // Add event listeners to all inputs
+        const inputs = ['bodyweight', 'totalWeight', 'snatch', 'cleanJerk'];
+        inputs.forEach(inputId => {
+            document.getElementById(inputId).addEventListener('input', calculateSinclair);
+        });
+
+        document.querySelectorAll('input[name="gender"]').forEach(radio => {
+            radio.addEventListener('change', calculateSinclair);
+        });
+
+        // Add subtle hover animations to inputs
+        document.querySelectorAll('input[type="number"]').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'translateY(-2px)';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body>
+</html>
