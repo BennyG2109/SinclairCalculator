@@ -290,10 +290,19 @@
         const result = document.getElementById('result');
         const sinclairScore = document.getElementById('sinclairScore');
 
-        // Constants for Sinclair formula
+        // Year selection
+        const SELECTED_YEAR = 2024; // Change this to 2025 to use new formula
+
+        // Constants for Sinclair formula by year
         const CONSTANTS = {
-            male: { A: 0.700767819, b: 201.159 },
-            female: { A: 0.674107991, b: 163.918 }
+            2024: {
+                male: { A: 0.722762521, b: 193.609 },
+                female: { A: 0.787004341, b: 153.757 }
+            },
+            2025: {
+                male: { A: 0.700767819, b: 201.159 },
+                female: { A: 0.674107991, b: 163.918 }
+            }
         };
 
         // Toggle between total and separate inputs
@@ -336,11 +345,16 @@
                 result.classList.remove('show');
                 return;
             }
-
-            // Calculate Sinclair coefficient
-            const constants = CONSTANTS[gender];
-            const X = Math.log10(bodyweight / constants.b);
-            const C = Math.pow(10, constants.A * X * X);
+            
+            // Get constants for selected year and gender
+            const constants = CONSTANTS[SELECTED_YEAR][gender];
+            let C;
+            if (bodyweight <= constants.b) {
+                const X = Math.log10(bodyweight / constants.b);
+                C = Math.pow(10, constants.A * X * X);
+            } else {
+                C = 1; // If bodyweight > b, coefficient is 1
+            }
             const sinclairResult = C * total;
 
             // Display result with animation
